@@ -8,7 +8,7 @@
 
 // キー入力に対応する音を鳴らす
 // 実行方法
-// ./piano | play -t raw -b 16 -c 1 -e s -r 44100 -   
+// ./piano | play -t raw -b 16 -c 1 -e s -r 44100 -
 
 void die(char *s){
     perror(s);
@@ -16,7 +16,7 @@ void die(char *s){
 }
 
 // 周波数のリスト
-void scale_freq(int n, float freq[n]){
+void scale_freq(const int n, float freq[n]){
     float f = 261.63; //ドの周波数
     for (int i = 0; i < n; ++i){
         freq[i] = f;
@@ -25,7 +25,7 @@ void scale_freq(int n, float freq[n]){
 }
 
 // キーに対応した音の周波数を返す
-float key_to_freq(unsigned char key, int n, float freq[n]){
+float key_to_freq(const unsigned char key, const int n, const float freq[n]){
     if (key == 'a'){
         return freq[0];
     } else if (key == 'w'){
@@ -67,13 +67,13 @@ int main(int argc, char **argv){
     float dt = 1.0 / 44100;
     unsigned char key;
 
-    // system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
-    // whileの終了条件を考える[*]
-
+    system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
+    
     while(1){
         int n = read(0, &key, sizeof(key)); // 標準入力
         if (n == -1) die("read");
         if (n == 0) break;
+        if (key == '.') break;
         float f = key_to_freq(key, n, freq);
         if (f == 0) continue;
         float t = 0;
@@ -89,7 +89,7 @@ int main(int argc, char **argv){
         }
     }
 
-    // system("/bin/stty cooked");  // 後始末
+    system("/bin/stty cooked");  // 後始末
 
     return 0;
 }
