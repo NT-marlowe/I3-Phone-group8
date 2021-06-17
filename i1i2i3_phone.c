@@ -24,8 +24,8 @@ int main(int argc, char ** argv) {
     exit(EXIT_FAILURE);
   }
 
-  int ss = socket(PF_INET, SOCK_STREAM, 0);
-  int s;
+  int ss = socket(PF_INET, SOCK_STREAM, 0);    //client
+  int s;                                       //server
   int server = strcmp(argv[1], "-l") == 0;
 
   struct sockaddr_in addr;
@@ -59,7 +59,7 @@ int main(int argc, char ** argv) {
     クライアント側でも接続待ちができるようにする．接続が失敗した場合，1秒毎に接続を再試行する．
     5回試行しても失敗する場合，プログラムを終了する， 
     */
-    while (c == -1 && connectionTryCount < 5)　
+    while (c == -1 && connectionTryCount < 5)
     {
       fprintf(stderr, "Trying to connect...\n");
       sleep(1);
@@ -82,6 +82,7 @@ int main(int argc, char ** argv) {
   unsigned char data[N];
   while (1)
   {
+    // 自分の話す声を録音したデータをdataバッファに読み込む
     int n = fread(data, sizeof(unsigned char), N, fp);
     
     if (n == -1) {
@@ -89,23 +90,39 @@ int main(int argc, char ** argv) {
       die("read");
     }
 
-    if (feof(fp)) break; // end of file
+    // if (feof(fp)) break; // end of file
     if (ferror(fp)) {
       close(ss);
       die("errorOfStream");
     }
-
-    if (n < N) break; // これもend of file?
-    
+    // if (n < N) break; // これもend of file?
+    // 録音データを相手に送る
     if (send(s, data, n * sizeof(unsigned char), 0) == -1) {
       close(ss);
       die("send");
     }
+
+    // 相手から送られる録音データをdataに読み込む
+    int r = recv(s, data, sizeof(data), 0);
+    if (r == -1) {
+      close(ss);
+      die("recv");
+    }
+    
+    // 録音データを標準出力に出し，playで再生する
+    int w = write(1, data, sizeof(unsigned char) * r);
+    if (w == -1) {
+      close(ss);
+      die("write");
+    }
+
   }
 
   close(s);
   if (server) close(ss);
   pclose(fp);
+
+  printf("aho\n");
   return 0;
 
-}
+} 
