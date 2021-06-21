@@ -12,7 +12,7 @@ int main(int argc, char ** argv)
 {
   int s;
   int a;
-  
+  // argc = 2ならサーバー3ならクライアント
   if(argc == 2) {		//printf("please enter filename");  exit(1);}
   int ss = socket(PF_INET,SOCK_STREAM,0);
   if(ss==-1){
@@ -33,6 +33,8 @@ int main(int argc, char ** argv)
  
   struct sockaddr_in client_addr;
   socklen_t len = sizeof(struct sockaddr_in);
+	  
+	  //二回アクセプトする。一個目がs,二個目がa.
   s = accept(ss,(struct sockaddr *)&client_addr, &len);
   if(s == -1){
 	perror("accept");
@@ -49,7 +51,7 @@ int main(int argc, char ** argv)
 
   close(ss);
   }
-
+//クライアント側は変わらず
   if(argc == 3) {//printf("please enter filename");  exit(1);}
   s = socket(PF_INET,SOCK_STREAM,0);
   if(s==-1){
@@ -73,7 +75,7 @@ int main(int argc, char ** argv)
  
 
 
-  
+  //popen使ってrec起動するやつ
   FILE	*fp;
   if ( (fp=popen("rec -t raw -b 16 -c 1 -e s -r 44100 -","r")) ==NULL) {
 		perror ("popen error");
@@ -83,6 +85,7 @@ int main(int argc, char ** argv)
   
   while(1){
   if(argc == 2){
+	  //サーバー側は、recからのデータ、２つのクライアントからのデータの３つをもらい、それぞれに必要な２つのデータの足し合わせを送りつける
     char buf[1];
     int n = fread(buf,sizeof(char),1,fp);
     if(n==-1){perror("fread"); exit(1);}
@@ -97,9 +100,11 @@ int main(int argc, char ** argv)
     int l = recv(a,buf3,1,0);
     if(l==-1){perror("open"); exit(1);}
     if(l==0) break;
-
+//sに送るやつ
     char send1[1];
+//aに送るやつ
     char send2[1];
+//自分用
     char receive[1];
 
     send1[1] = buf[1]+buf3[1];
@@ -114,7 +119,7 @@ int main(int argc, char ** argv)
 
 
 
-
+//クライアントは変わらず
   }else{
     char buf[1];
     int n = fread(buf,sizeof(char),1,fp);
