@@ -113,7 +113,7 @@ int main(int argc, char ** argv)
    
     if(write(1, receive, 1)==-1) {perror("write"); exit(1);}
 
-    if(write(s, send1, 10)==-1) {perror("write"); exit(1);}
+    if(write(s, send1, 1)==-1) {perror("write"); exit(1);}
     
     if(write(a, send2, 1)==-1) {perror("write"); exit(1);}
 
