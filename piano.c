@@ -17,7 +17,7 @@ void die(char *s){
 
 // 周波数のリスト
 void scale_freq(const int n, double freq[n]){
-    float f = 261.63; //ドの周波数
+    double f = 261.63; //ドの周波数
     for (int i = 0; i < n; ++i){
         freq[i] = f;
         f *= pow(2, 1.0 / 12);
@@ -59,7 +59,7 @@ int main(int argc, char **argv){
         double f = key_to_freq(key, n, freq);
         if (f == 0) continue;
         
-        int duration = fs * 0.3; // 0.3秒
+        int duration = (int)fs * 0.3; // 0.3秒
         signed short data;
         for (int i = 0; i < duration; ++i){
             data = sin_wave(A, f, fs, i);
