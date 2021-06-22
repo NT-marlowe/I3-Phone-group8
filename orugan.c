@@ -19,6 +19,8 @@ signed short orugan_sound(const signed short A, const double f, const int fs, co
     res += a[i] * sin(2.0 * M_PI * sound_freq * (i+1) * n / sample_freq);
   }
   
+  res *= A;
+  
   return (signed short)res;
   
 }
