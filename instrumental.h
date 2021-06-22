@@ -1,5 +1,5 @@
-#ifndef INCLUDE_orugan_h_
-#define INCLUDE_orugan_h_
+#ifndef INSTRUMENTAL_H
+#define INSTRUMENTAL_H
 
 void scale_freq(const int n, double freq[n]);
 double key_to_freq(const unsigned char key, const int n, const double freq[n], const int flag);
