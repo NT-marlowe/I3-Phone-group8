@@ -9,15 +9,17 @@
 班のメンバー4人がそれぞれ電子楽器を演奏し，セッションする．
 
 ## フォルダ構成
+```
 .
-├── bin
-├── include
-│   ├── instrumental.h
-    ├── communication.h
-    ├── compression.h
-├── lib
-└── src
-    ├── main.c
+├── bin 
+├── include 
+│   ├── instrumental.h 
+|   ├── communication.h 
+|   ├── compression.h 
+├── lib 
+└── src 
+    ├── main.c 
     ├── instrumental.c
     ├── communication.c
     ├── compression.c
+```
