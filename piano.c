@@ -67,25 +67,20 @@ int main(int argc, char **argv){
         if (r == 0) break;
 
         if (key == '.') break;
-        double f;
+        
         int flag = 0;
-        if(key == 'A'){//↑の入力のとき
-            flag = 1; // 1オクターブ上げる
+
+        if ('A' <= key && key <= 'B'){
+            if (key == 'A') flag = 1; // ↑の入力のときオクターブ上げる
+            else if (key == 'B') flag = -1; // ↓の入力のとき1オクターブ下げる
+
             r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
             if (r == -1) die("read");
             if (r == 0) break;
             if (key == '.') break;
         }
 
-        if(key == 'B'){//↓の入力のとき
-            flag = -1; // 1オクターブ下げる
-            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
-            if (r == -1) die("read");
-            if (r == 0) break;
-            if (key == '.') break;
-        }
-
-        f = key_to_freq(key, n, freq, flag);
+        double f = key_to_freq(key, n, freq, flag);
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
