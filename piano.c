@@ -9,6 +9,8 @@
 // キー入力に対応する音を鳴らす
 // 実行方法
 // ./piano | play -t raw -b 16 -c 1 -e s -r 44100 -
+// ↑キー入力の後、a,bなどを入力するとオクターブ上が出る
+
 
 void die(char *s){
     perror(s);
@@ -17,6 +19,7 @@ void die(char *s){
 
 // 周波数のリスト
 void scale_freq(const int n, double freq[n]){
+
     double f = 261.63; //ドの周波数
     for (int i = 0; i < n; ++i){
         freq[i] = f;
@@ -24,30 +27,34 @@ void scale_freq(const int n, double freq[n]){
     }
 }
 
-// キーに対応した音の周波数を返す
-double key_to_freq(const unsigned char key, const int n, const double freq[n]){
+
+// キーに対応した音の周波数を返す(基本となる音階)
+double key_to_freq(const unsigned char key, const int n, const double freq[n], const int flag){
     
     const unsigned char notes[] = 
         {'a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j', 'k'};
     
     for (int i = 0; i < n; i++) {
-        if (key == notes[i]) return freq[i];
+        if (key == notes[i]) return freq[i] * pow(2, flag); // 2 
     }
-    
     return 0;
 }
+
 
 signed short sin_wave(const signed short A, const double f, const int fs, const int n){
     signed short data = (signed short)A * sin(2.0 * M_PI * f * n / fs);
     return data;
 }
 
+
 int main(int argc, char **argv){
     unsigned short A = 10000;
     const int n = 13;
+
     const int fs = 44100; // 標本化周波数
     double freq[n];
     scale_freq(n, freq);
+  
     unsigned char key;
     system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
 
@@ -55,8 +62,22 @@ int main(int argc, char **argv){
         int r = read(0, &key, sizeof(key)); // 標準入力
         if (r == -1) die("read");
         if (r == 0) break;
-        if (key == '.') break; //finish
-        double f = key_to_freq(key, n, freq);
+
+        if (key == '.') break;
+        double f;
+        int flag = 0;
+        if(key == 'A'){//↑の入力のとき
+            flag = 1;
+            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み、
+            if (r == -1) die("read");
+            if (r == 0) break;
+            if (key == '.') break;
+            // f = key_to_freq2(key, n, freq); // オクターブ上の周波数を取得する
+        }
+
+        f = key_to_freq(key, n, freq, flag);
+
+
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
