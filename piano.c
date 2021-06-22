@@ -44,8 +44,8 @@ double key_to_freq(const unsigned char key, const int n, const double freq[n], c
 
 signed short sin_wave(const signed short A, const double f, const int fs, const int n){
 
-    signed short data = (signed short)A * sin(2.0 * M_PI * f * n / fs);
-    return data;
+    signed short res = (signed short)A * sin(2.0 * M_PI * f * n / fs);
+    return res;
 }
 
 
