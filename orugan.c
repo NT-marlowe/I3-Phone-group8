@@ -3,7 +3,7 @@
 #include <math.h>
 
 
-double orugan_sound(double sound_freq, const int sample_freq, const int n) {
+signed short orugan_sound(const signed short A, const double f, const int fs, const int n) {
   
   double res = 0; 
 
@@ -19,6 +19,6 @@ double orugan_sound(double sound_freq, const int sample_freq, const int n) {
     res += a[i] * sin(2.0 * M_PI * sound_freq * (i+1) * n / sample_freq);
   }
   
-  return res;
+  return (signed short)res;
   
 }
