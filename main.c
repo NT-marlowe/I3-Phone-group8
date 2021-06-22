@@ -70,12 +70,9 @@ int main(int argc, char **argv){
         signed short data;
         for (int i = 0; i < duration; ++i){
             switch(mode){
-                // case 0: data = sin_wave(A, f, fs, i); break;
                 case 1: data = orugan_sound(A, f, fs, i); break;
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
-            // if (mode == 0) data = sin_wave(A, f, fs, i);
-            // else if (mode == 1) data = orugan_sound(A, f, fs, i);
 
             int m = write(1, &data, sizeof(data)); // 標準出力に出す
             if (m == -1) die("write");
