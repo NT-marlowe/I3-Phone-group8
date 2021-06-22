@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "instrumental.h"
 
 // キー入力に対応する音を鳴らす
 // 実行方法
@@ -86,7 +87,8 @@ int main(int argc, char **argv){
         int duration = (int)fs * 0.3; // 0.3秒
         signed short data;
         for (int i = 0; i < duration; ++i){
-            data = sin_wave(A, f, fs, i);
+            // data = sin_wave(A, f, fs, i);
+            data = orugan_sound(A, f, fs, i);
             int m = write(1, &data, sizeof(data)); // 標準出力に出す
             if (m == -1) die("write");
         }
