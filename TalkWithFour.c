@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
   int s;
   int a;
   int b;
-//一サイクルで送るデータ量、少なすぎると音がブチブチ切れていて聞けたものじゃなかった。でもこのプログラムの構造上大きいと遅延が増える
+//一サイクルで送るデータ量、少なすぎると音がブチブチ切れていて聞けたものじゃなかった。でもこのプログラムの構造上大きいと遅延が増えそう
   int N = 20;
 //引数２つはサーバーになる
   if(argc == 2) {		//printf("please enter filename");  exit(1);}
@@ -103,7 +103,7 @@ data[1] = 1;
   
   
   while(1){
-//サーバー側はサーバーの音クライアントの音２つの３つのデータを適宜合成する
+//サーバー側はサーバーの音クライアントの音3つの4つのデータを適宜合成する
   if(argc == 2){
     char buf[N];
     int n = fread(buf,sizeof(char),N,fp);
@@ -135,7 +135,7 @@ for(int i = 0;i<N;i++){
     send3[i] = buf[i]+buf2[i]+buf3[i];
     receive[i] = buf2[i]+buf3[i]+buf4[i];  
 }
-//サーバーの標準出力は２つのクライアントの合成
+//サーバーの標準出力は3つのクライアントの合成
     if(write(1, receive, N)==-1) {perror("write"); exit(1);}
 //クライアントへの書き込みはサーバーの音ともう片方のクライアントの音の合成
     if(write(s, send1, N)==-1) {perror("write"); exit(1);}
