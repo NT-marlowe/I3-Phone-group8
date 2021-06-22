@@ -10,6 +10,7 @@
 // 実行方法
 // ./piano | play -t raw -b 16 -c 1 -e s -r 44100 -
 // ↑キー入力の後、a,bなどを入力するとオクターブ上が出る
+// ↓キー入力の後、a,bなどを入力するとオクターブ下が出る
 
 
 void die(char *s){
@@ -42,12 +43,14 @@ double key_to_freq(const unsigned char key, const int n, const double freq[n], c
 
 
 signed short sin_wave(const signed short A, const double f, const int fs, const int n){
+
     signed short data = (signed short)A * sin(2.0 * M_PI * f * n / fs);
     return data;
 }
 
 
 int main(int argc, char **argv){
+
     unsigned short A = 10000;
     const int n = 13;
 
@@ -67,17 +70,22 @@ int main(int argc, char **argv){
         double f;
         int flag = 0;
         if(key == 'A'){//↑の入力のとき
-            flag = 1;
-            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み、
+            flag = 1; // 1オクターブ上げる
+            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
             if (r == -1) die("read");
             if (r == 0) break;
             if (key == '.') break;
-            // f = key_to_freq2(key, n, freq); // オクターブ上の周波数を取得する
+        }
+
+        if(key == 'B'){//↓の入力のとき
+            flag = -1; // 1オクターブ下げる
+            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
+            if (r == -1) die("read");
+            if (r == 0) break;
+            if (key == '.') break;
         }
 
         f = key_to_freq(key, n, freq, flag);
-
-
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
