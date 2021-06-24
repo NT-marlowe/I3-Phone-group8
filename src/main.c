@@ -57,9 +57,11 @@ int main(int argc, char **argv){
         }
 
         // 数字が押された時は以降の音色を変える
-        if ('0' <= key && key <= '1'){
+        if ('0' <= key && key <= '3'){
             if (key == '0') mode = 0; // sin
             else if (key == '1') mode = 1; // オルガン
+            else if (key == '2') mode = 2; //木琴
+            else if (key == '3') mode = 3; // ベル
             continue;
         }
 
@@ -67,10 +69,15 @@ int main(int argc, char **argv){
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
+        double bell[duration];
+        if (mode == 3){
+            bell_sound(A, f, fs, duration, bell);
+        }
         signed short data;
         for (int i = 0; i < duration; ++i){
             switch(mode){
                 case 1: data = orugan_sound(A, f, fs, i); break;
+                case 3: data = (signed short)bell[i]; break;
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
