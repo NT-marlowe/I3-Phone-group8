@@ -67,8 +67,9 @@ void server(int port,int number){
     //send[0]を標準出力、send[>0]は各々のサーバーに送る。bufを足し合わせてこれを作るが、自分の声が入らないように配慮する。
     char send[number+1][N];
 
-    for(int i = 0;i<N;i++){
-      for(int j = 0;j<number+1;j++){
+    // for(int i = 0;i<N;i++){
+    for (int j = 0; j < number+1; j++) {
+      for(int i = 0; i < N; i++) {
       	send[j][i] = 0;
 	      for(int k = 0;k<number+1;k++){
           if(j!=k){
