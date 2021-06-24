@@ -9,7 +9,7 @@
 #include<unistd.h>
 #include<arpa/inet.h>
 
-#define N 20
+#define N 1000
 
 
 void server(int port,int number){
