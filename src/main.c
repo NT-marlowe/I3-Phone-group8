@@ -80,7 +80,7 @@ int main(int argc, char **argv){
                 case 1: data = orugan_sound(A, f, fs, i); break;
                 case 2: data = mokkin_sound(A, f, fs, i); break;
                 case 3: data = bell[i]; break;
-                case 4: data = guitar_sound(A, f/2, fs, i); break; // guitorは低音が得意なのでデフォで低音に
+                case 4: data = guitar_sound(A, f/2, fs, i); break; // guitarは低音が得意なのでデフォで低音に
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
