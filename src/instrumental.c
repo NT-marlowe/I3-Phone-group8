@@ -12,7 +12,6 @@ void scale_freq(const int n, double freq[n]){
     }
 }
 
-
 // キーに対応した音の周波数を返す(基本となる音階)
 double key_to_freq(const unsigned char key, const int n, const double freq[n], const int flag){
     
@@ -74,34 +73,6 @@ signed short mokkin_sound(const signed short A, const double f, const int fs, co
   return (signed short)res;
   
 }
-
-signed short guitor_sound(const signed short A, const double f, const int fs, const int n) {
-  
-  double res = 0; 
-
-  double a[10] = {};
- 
-  a[0] = 1.0 * exp(-5.0 * n / (fs * 2.0));
-  a[1] = 0.2 * exp(-5.0 * n / (fs * 1.0));
-  a[2] = 0.8 * exp(-5.0 * n / (fs * 0.5));
-  a[3] = 0.1 * exp(-5.0 * n / (fs * 0.25));
-  a[4] = 0.6 * exp(-5.0 * n / (fs * 0.125));
-  a[5] = 0 * exp(-5.0 * n / (fs * 1.0));
-  a[6] = 0.4 * exp(-5.0 * n / (fs * 0.5));
-  a[7] = 0.3 * exp(-5.0 * n / (fs * 0.25));
-  a[8] = 0.2 * exp(-5.0 * n / (fs * 0.25));
-  a[9] = 0 * exp(-5.0 * n / (fs * 0.125));
-
-  for (int i = 0; i < 10; i++) {
-    res += a[i] * sin(2.0 * M_PI * f * (i+1) * n / fs);
-  }
-  
-  res *= A;
-
-  return (signed short)res;
-  
-}
-
 
 void ADSR(double e[], const int A, const int D, const double S, const int R, const int gate, const int duration)
 {
