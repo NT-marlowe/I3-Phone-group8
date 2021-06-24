@@ -2,6 +2,38 @@
 #include <stdlib.h>
 #include <math.h>
 
+<<<<<<< HEAD:src/instrumental.c
+=======
+// 周波数のリスト
+void scale_freq(const int n, double freq[n]){
+
+    double f = 261.63; //ドの周波数
+    for (int i = 0; i < n; ++i){
+        freq[i] = f;
+        f *= pow(2, 1.0 / 12);
+    }
+}
+
+
+// キーに対応した音の周波数を返す(基本となる音階)
+double key_to_freq(const unsigned char key, const int n, const double freq[n], const int flag){
+    
+    const unsigned char notes[] = 
+        {'a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j', 'k'};
+    
+    for (int i = 0; i < n; i++) {
+        if (key == notes[i]) return freq[i] * pow(2, flag);
+    }
+    return 0;
+}
+
+signed short sin_wave(const signed short A, const double f, const int fs, const int n){
+
+    signed short res = (signed short)A * sin(2.0 * M_PI * f * n / fs);
+    return res;
+}
+
+>>>>>>> 3463f823aa0b6fa1dbdafed340d5277374068f19:instrumental.c
 signed short orugan_sound(const signed short A, const double f, const int fs, const int n) {
   
   double res = 0; 
