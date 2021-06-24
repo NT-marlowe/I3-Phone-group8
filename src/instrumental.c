@@ -106,12 +106,11 @@ void bell_sound(const signed short A, const double f, const int fs, const int du
   double *ac = calloc(duration, sizeof(double));
   double *am = calloc(duration, sizeof(double));
   ADSR(ac, 0, duration, 0.0, duration, duration, duration);
-  // ADSR(am, 0, duration / 2, 0.0, duration / 2, duration, duration);
-  double fm = f * 3.5;
+  ADSR(am, 0, duration / 2, 0.0, duration / 2, duration, duration);
+  double fm = f * 5.5;
   for (int i = 0; i < duration; ++i){
-    res[i] = ac[i] * sin(2.0 * M_PI * f * i / fs)
-           + am[i] * sin(2.0 * M_PI * fm * i / fs);
-    res[i] *= 0.5;
+    res[i] = A * ac[i] * sin(2.0 * M_PI * f * i / fs)
+           + A * am[i] * sin(2.0 * M_PI * fm * i / fs);
   }
   free(ac);
   free(am);
