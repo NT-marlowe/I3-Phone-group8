@@ -7,6 +7,8 @@ double key_to_freq(const unsigned char key, const int n, const double freq[n], c
 signed short sin_wave(const signed short A, const double f, const int fs, const int n);
 signed short orugan_sound(const signed short A, const double f, const int fs, const int n);
 signed short mokkin_sound(const signed short A, const double f, const int fs, const int n);
-signed short guitor_sound(const signed short A, const double f, const int fs, const int n);
+void ADSR(double e[], const int A, const int D, const double S, const int R, const int gate, const int duration);
+void bell_sound(const signed short A, const double f, const int fs, const int duration, double res[duration]);
+signed short guitar_sound(const signed short A, const double f, const int fs, const int n);
 
 #endif

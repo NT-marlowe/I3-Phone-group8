@@ -60,8 +60,9 @@ int main(int argc, char **argv){
         if ('0' <= key && key <= '4'){
             if (key == '0') mode = 0; // sin
             else if (key == '1') mode = 1; // オルガン
-            else if (key == '2') mode = 2; //木琴ぽいなにか
-            else if (key == '4') mode = 4; //guitor的ななにか
+            else if (key == '2') mode = 2; //木琴
+            else if (key == '3') mode = 3; // ベル
+            else if (key == '4') mode = 4; // guitar
             continue;
         }
 
@@ -69,12 +70,17 @@ int main(int argc, char **argv){
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
+        double bell[duration];
+        if (mode == 3){
+            bell_sound(A, f, fs, duration, bell);
+        }
         signed short data;
         for (int i = 0; i < duration; ++i){
             switch(mode){
                 case 1: data = orugan_sound(A, f, fs, i); break;
                 case 2: data = mokkin_sound(A, f, fs, i); break;
-                case 4: data = guitor_sound(A, f/2, fs, i); break; // guitorは低音が得意なのでデフォで低音に
+                case 3: data = bell[i]; break;
+                case 4: data = guitar_sound(A, f/2, fs, i); break; // guitorは低音が得意なのでデフォで低音に
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
