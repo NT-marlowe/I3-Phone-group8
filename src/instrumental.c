@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+<<<<<<< HEAD:src/instrumental.c
+=======
 // 周波数のリスト
 void scale_freq(const int n, double freq[n]){
 
@@ -31,6 +33,7 @@ signed short sin_wave(const signed short A, const double f, const int fs, const 
     return res;
 }
 
+>>>>>>> 3463f823aa0b6fa1dbdafed340d5277374068f19:instrumental.c
 signed short orugan_sound(const signed short A, const double f, const int fs, const int n) {
   
   double res = 0; 
@@ -52,3 +55,27 @@ signed short orugan_sound(const signed short A, const double f, const int fs, co
   return (signed short)res;
   
 }
+
+signed short violine_sound(const signed short A, const double f, const int fs, const int n) {
+  
+  double res = 0; 
+
+  double a[5] = {};
+ 
+  a[0] = 1.5 * exp(-5.0 * n / (fs * 4.0));
+  a[1] = 0.1388 * exp(-5.0 * n / (fs * 2.0));
+  a[2] = 0.486 * exp(-5.0 * n / (fs * 1.0));
+  a[3] = 0.1388 * exp(-5.0 * n / (fs * 0.5));
+  a[4] = 0.069 * exp(-5.0 * n / (fs * 0.2));
+
+  for (int i = 0; i < 5; i++) {
+    res += a[i] * sin(2.0 * M_PI * f * (i+1) * n / fs);
+  }
+  
+  res *= A;
+
+  return (signed short)res;
+  
+}
+
+
