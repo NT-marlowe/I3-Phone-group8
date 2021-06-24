@@ -9,7 +9,7 @@
 #include<unistd.h>
 #include<arpa/inet.h>
 
-#define N 20
+#define N 1024
 
 void die(char *s) {
   perror(s);
@@ -41,7 +41,7 @@ void server(int port,int number){
 //popen関数でrecを起動
   FILE	*fp;
   char *command = "rec -t raw -b 16 -c 1 -e s -r 44100 -";
-  if ( (fp = popen(command,"r") ) ==NULL) die("popen error");
+  if ( (fp = popen(command,"r") ) == NULL) die("popen error");
 
   
   //サーバー側がデータを送ってせき止めを解除することでクライアント共も録音を始める
