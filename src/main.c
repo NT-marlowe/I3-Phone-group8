@@ -77,6 +77,10 @@ int main(int argc, char **argv){
             int m = write(1, &data, sizeof(data)); // 標準出力に出す
             if (m == -1) die("write");
         }
+        for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
+            data = 0;
+            if (write(1, &data, sizeof(data)) == -1) die("write"); // 標準出力に出す
+        }
     }
 
     system("/bin/stty cooked");  // 後始末

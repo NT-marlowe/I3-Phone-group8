@@ -10,6 +10,7 @@
 #include<arpa/inet.h>
 
 #define N 1024
+#define N 1000
 
 void die(char *s) {
   perror(s);
@@ -155,22 +156,26 @@ int main(int argc, char ** argv)
 引数の数で判断できなくなってしまったので、緊急処置としてなんの意味も持たない４つ目の
 引数を入力することで動くようにした。　
 ./a.out (ポート番号) (人数) (何でもいい) でサーバーになる*/
+/*./a.out (ポート番号) (人数) s でサーバーになる*/
   if(argc == 4) {
-  int number = atoi(argv[2])-1;
-  int port = atoi(argv[1]);
-  server(port,number);
-  }
+    if(argv[3][0]=='s'){
+      int number = atoi(argv[2]) - 1;
+      int port = atoi(argv[1]);
+      server(port,number);
 
+//./a.out (IPアドレス) (ポート番号) c でクライアントになる
+    }else if(argv[3][0] == 'c'){
+      char* address;
+      address = (char*)malloc(sizeof(char)*strlen(argv[1]));
+      strcpy(address,argv[1]);
+      int port = atoi(argv[2]);
+      client(address,port);  
+    }
+    else die("usage : 3つめはsかcにしてください");
 
-
-//引数３つはクライアントになるが、動作はほぼI2時点から変わらず。./a.out (IPアドレス) (ポート番号)
-  else {//printf("please enter filename");  exit(1);}
-    char* address;
-    address = (char*)malloc(sizeof(char)*strlen(argv[1]));
-    strcpy(address,argv[1]);
-    int port = atoi(argv[2]);
-    client(address,port);
-}
-
+  } 
+  else die("引数を３つにしてください。(ポート)　(人数)　sでサーバー、(ポート) (人数) cでクライアント");
+  {perror("引数を３つにしてください。(ポート)　(人数)　sでサーバー、(ポート) (人数) cでクライアント");  exit(1);}
+  
   return 0;
 }
