@@ -7,48 +7,21 @@
 #include <math.h>
 #include "../include/instrumental.h"
 
-// キー入力に対応する音を鳴らす
 // 実行方法
-// ./piano | play -t raw -b 16 -c 1 -e s -r 44100 -
+// gcc -c main.c
+// gcc -c instrumental.c
+// gcc main.o instrumental.o -lm
+// ./a.out | play -t raw -b 16 -c 1 -e s -r 44100 -
+
 // ↑キー入力の後、a,bなどを入力するとオクターブ上が出る
 // ↓キー入力の後、a,bなどを入力するとオクターブ下が出る
-
+// 0(zero)入力の後、サイン波が鳴る(デフォルト)
+// 1入力の後、オルガンが鳴る
 
 void die(char *s){
     perror(s);
     exit(1);
 }
-
-// 周波数のリスト
-void scale_freq(const int n, double freq[n]){
-
-    double f = 261.63; //ドの周波数
-    for (int i = 0; i < n; ++i){
-        freq[i] = f;
-        f *= pow(2, 1.0 / 12);
-    }
-}
-
-
-// キーに対応した音の周波数を返す(基本となる音階)
-double key_to_freq(const unsigned char key, const int n, const double freq[n], const int flag){
-    
-    const unsigned char notes[] = 
-        {'a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j', 'k'};
-    
-    for (int i = 0; i < n; i++) {
-        if (key == notes[i]) return freq[i] * pow(2, flag); // 2 
-    }
-    return 0;
-}
-
-
-signed short sin_wave(const signed short A, const double f, const int fs, const int n){
-
-    signed short res = (signed short)A * sin(2.0 * M_PI * f * n / fs);
-    return res;
-}
-
 
 int main(int argc, char **argv){
 
@@ -60,6 +33,7 @@ int main(int argc, char **argv){
     scale_freq(n, freq);
   
     unsigned char key;
+    unsigned char mode = '0';
     system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
 
     while(1){
@@ -71,6 +45,7 @@ int main(int argc, char **argv){
         
         int flag = 0;
 
+        // ↑↓が押された時
         if ('A' <= key && key <= 'B'){
             if (key == 'A') flag = 1; // ↑の入力のときオクターブ上げる
             else if (key == 'B') flag = -1; // ↓の入力のとき1オクターブ下げる
@@ -81,15 +56,24 @@ int main(int argc, char **argv){
             if (key == '.') break;
         }
 
+        // 数字が押された時は以降の音色を変える
+        if ('0' <= key && key <= '1'){
+            if (key == '0') mode = 0; // sin
+            else if (key == '1') mode = 1; // オルガン
+            continue;
+        }
+
         double f = key_to_freq(key, n, freq, flag);
         if (f == 0) continue;
         
         int duration = (int)fs * 0.3; // 0.3秒
         signed short data;
         for (int i = 0; i < duration; ++i){
-            // data = sin_wave(A, f, fs, i);
-            // data = orugan_sound(A, f, fs, i);
-            data = violine_sound(A, f, fs, i);
+            switch(mode){
+                case 1: data = orugan_sound(A, f, fs, i); break;
+                default: data = sin_wave(A, f, fs, i); // mode = 0
+            }
+
             int m = write(1, &data, sizeof(data)); // 標準出力に出す
             if (m == -1) die("write");
         }
