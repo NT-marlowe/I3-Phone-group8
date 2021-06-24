@@ -62,6 +62,7 @@ int main(int argc, char **argv){
             else if (key == '1') mode = 1; // オルガン
             else if (key == '2') mode = 2; //木琴
             else if (key == '3') mode = 3; // ベル
+            else if (key == '4') mode = 4; // guitar
             continue;
         }
 
@@ -77,7 +78,9 @@ int main(int argc, char **argv){
         for (int i = 0; i < duration; ++i){
             switch(mode){
                 case 1: data = orugan_sound(A, f, fs, i); break;
-                case 3: data = (signed short)bell[i]; break;
+                case 2: data = mokkin_sound(A, f, fs, i); break;
+                case 3: data = bell[i]; break;
+                case 4: data = guitar_sound(A, f/2, fs, i); break;
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
