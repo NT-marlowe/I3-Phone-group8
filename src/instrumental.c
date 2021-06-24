@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-<<<<<<< HEAD:src/instrumental.c
-=======
 // 周波数のリスト
 void scale_freq(const int n, double freq[n]){
 
@@ -33,7 +31,6 @@ signed short sin_wave(const signed short A, const double f, const int fs, const 
     return res;
 }
 
->>>>>>> 3463f823aa0b6fa1dbdafed340d5277374068f19:instrumental.c
 signed short orugan_sound(const signed short A, const double f, const int fs, const int n) {
   
   double res = 0; 
