@@ -14,14 +14,14 @@
 ├── bin 
 ├── include 
 │   ├── instrumental.h 
-|   ├── communication.h 
-|   ├── compression.h 
+│   ├── communication.h 
+│   └── compression.h 
 ├── lib 
 └── src 
     ├── main.c 
     ├── instrumental.c
     ├── communication.c
-    ├── compression.c
+    └── compression.c
 ```
 
 ## 実行方法
@@ -49,9 +49,9 @@ $ make clean (余分なファイルを消したいとき)
 また、数字を入力するとその後の音が以下の楽器に変更される
 |  キーボード  |  楽器  |
 | ---- | ---- |
-|  default  |  sin波  |
+|  default (0) |  sin波  |
 |  1  |  オルガン  |
 |  2  |  木琴  |
-|  3  |    |
+|  3  |  ベル  |
 |  4  |  ギター  |
 
