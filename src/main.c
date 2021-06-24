@@ -72,7 +72,7 @@ int main(int argc, char **argv){
         for (int i = 0; i < duration; ++i){
             switch(mode){
                 case 1: data = orugan_sound(A, f, fs, i); break;
-                case 2: data = violine_sound(A, f, fs, i); break;
+                case 2: data = mokkin_sound(A, f, fs, i); break;
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
