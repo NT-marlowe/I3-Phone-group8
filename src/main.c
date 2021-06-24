@@ -57,9 +57,10 @@ int main(int argc, char **argv){
         }
 
         // 数字が押された時は以降の音色を変える
-        if ('0' <= key && key <= '1'){
+        if ('0' <= key && key <= '2'){
             if (key == '0') mode = 0; // sin
             else if (key == '1') mode = 1; // オルガン
+            else if (key == '2') mode = 2; //木琴ぽいなにか
             continue;
         }
 
@@ -71,6 +72,7 @@ int main(int argc, char **argv){
         for (int i = 0; i < duration; ++i){
             switch(mode){
                 case 1: data = orugan_sound(A, f, fs, i); break;
+                case 2: data = violine_sound(A, f, fs, i); break;
                 default: data = sin_wave(A, f, fs, i); // mode = 0
             }
 
