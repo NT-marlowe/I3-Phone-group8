@@ -163,23 +163,27 @@ void client(char* address,int port){
 
 int main(int argc, char ** argv)
 {
-/*引数4つはサーバーになる。本来サーバーがポート番号のみ必要でクライアントはIPアドレスとポート番号が必要だから引数の数で判別できるだろうと思ってできた仕様。多人数通話になることでサーバー側に参加人数の情報を付け加える必要が生まれ、引数の数で判断できなくなってしまったので、緊急処置としてなんの意味も持たない４つ目の引数を入力することで動くようにした。　./a.out (ポート番号) (人数) (何でもいい) でサーバーになる*/
+/*./a.out (ポート番号) (人数) s でサーバーになる*/
   if(argc == 4) {
-  int number = atoi(argv[2])-1;
-  int port = atoi(argv[1]);
-  server(port,number);
-  }
+    if(argv[3][0]=='s'){
+      int number = atoi(argv[2])-1;
+      int port = atoi(argv[1]);
+      server(port,number);
 
-
-
-//引数３つはクライアントになるが、動作はほぼI2時点から変わらず。./a.out (IPアドレス) (ポート番号)
-  else {//printf("please enter filename");  exit(1);}
+//./a.out (IPアドレス) (ポート番号) c でクライアントになる
+    }else if(argv[3][0]=='c'){
     char* address;
     address = (char*)malloc(sizeof(char)*strlen(argv[1]));
     strcpy(address,argv[1]);
     int port = atoi(argv[2]);
-    client(address,port);
-}
+    client(address,port);  
+    }else {perror("３つめはsかcにしてください。"); exit(1);}
+
+
+
+
+  } else {perror("引数を３つにしてください。(ポート)　(人数)　sでサーバー、(ポート) (人数) cでクライアント");  exit(1);}
+
 
   return 0;
 }
