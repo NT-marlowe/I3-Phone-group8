@@ -47,7 +47,7 @@ void server(int port,int number_of_host){
   
   // サーバー側がデータを送ってせき止めを解除することでクライアント共も録音を始める
   char data[1];
-  data[1] = 1;
+  data[0] = 1;
   for (int i = 0; i < number_of_host; i++){
     if (write(s[i], data, 1) == -1) die("write");
    }

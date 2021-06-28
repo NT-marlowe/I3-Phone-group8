@@ -5,7 +5,7 @@ INCLUDE = ./include
 LIBDIR = ./lib
 SRCDIR = ./src
 
-CFLAGS = -Wall -O2 
+CFLAGS = -Wall -O2 -Wno-unused-result
 LDFLAGS = -lm
 # LDFLAGS = -L$(LIBDIR)
 # LDLIBS = -linstrumental
