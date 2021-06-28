@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include "../include/instrumental.h"
+#include "../include/communication.h"
+#include "../include/die.h"
 
 // 実行方法
 // gcc -c main.c
@@ -18,10 +20,10 @@
 // 0(zero)入力の後、サイン波が鳴る(デフォルト)
 // 1入力の後、オルガンが鳴る
 
-void die(char *s){
-    perror(s);
-    exit(1);
-}
+// void die(char *s){
+//     perror(s);
+//     exit(1);
+// }
 
 int main(int argc, char **argv){
 

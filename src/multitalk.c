@@ -75,21 +75,23 @@ void server(int port,int number){
           if(j!=k){
             send[j][i] += buf[k][i];
           }
-	}
+      	}
       }
     }
 
     //サーバーの標準出力
     if(write(1, send[0], N)==-1) die("write");
     //クライアントへの書き込み
-    for(int i = 0;i<number;i++){
+    for(int i = 0;i < number; i++){
       if(write(s[i], send[i+1], N )== -1) die("write");
     }
 
 
   }
   pclose(fp);
-  for(int i = 0; i < number; i++) {close(s[i]);}
+  for(int i = 0; i < number; i++) {
+    close(s[i]);
+  }
 }
 
 
@@ -120,16 +122,17 @@ void client(char* address,int port){
     
     char buf[N];
     int n = fread(buf,sizeof(char),N,fp);
-    if(n == -1) die("fread");
-    if(n == 0) break;
-    if(write(s, buf, N) == -1) die("write");
+    if (n == -1) die("fread");
+    if (n == 0) break;
+    if (write(s, buf, N) == -1) die("write");
 
     char buf2[N];
     int m = recv(s,buf2,N,0);
-    if(m == -1) die("open");
-    if(m == 0) break;
-    if(write(1, buf2, N) == -1) die("write");
-    }
+    if (m == -1) die("open");
+    if (m == 0) break;
+    if (write(1, buf2, N) == -1) die("write");
+   
+  }
   pclose(fp);
   close(s);
 }
@@ -157,13 +160,14 @@ int main(int argc, char ** argv)
 ./a.out (ポート番号) (人数) (何でもいい) でサーバーになる*/
 /*./a.out (ポート番号) (人数) s でサーバーになる*/
   if(argc == 4) {
-    if(argv[3][0]=='s'){
+    if(argv[3][0] == 's'){
       int number = atoi(argv[2]) - 1;
       int port = atoi(argv[1]);
       server(port,number);
 
 //./a.out (IPアドレス) (ポート番号) c でクライアントになる
-    }else if(argv[3][0] == 'c'){
+    }
+    else if(argv[3][0] == 'c'){
       char* address;
       address = (char*)malloc(sizeof(char)*strlen(argv[1]));
       strcpy(address,argv[1]);
