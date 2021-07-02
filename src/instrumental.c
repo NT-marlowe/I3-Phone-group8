@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+// 1回の通信で送るデータバイト数
+#define PACKET_N 1024
+
 // 周波数のリスト
 void scale_freq(const int n, double freq[n]){
 
@@ -142,88 +145,93 @@ signed short guitar_sound(const signed short A, const double f, const int fs, co
   
 }
 
-void send_music(int s){	//sで指定した場所にキー入力から変換された波形を送る関数
-    unsigned short A = 10000;
-    const int n = 13;
+// sで指定した場所にキー入力から変換された波形を送る関数
+// クライアントからサーバに波形を送る
+void send_music_from_client(int s){	
+  unsigned short A = 10000;
+  const int n = 13;
 
-    const int PACKET = 1024;//一度に送るデータ量
-    const int fs = 44100; // 標本化周波数
-    double freq[n];
-    scale_freq(n, freq);
-  
-    unsigned char key;
-    unsigned char mode = '0';
-    system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
+  // const int PACKET = 1024;//一度に送るデータ量
+  const int fs = 44100; // 標本化周波数
+  double freq[n];
+  scale_freq(n, freq);
 
-    while(1){
-        int r = read(0, &key, sizeof(key)); // 標準入力
-        if (r == -1) die("read");
-        if (r == 0) break;
+  unsigned char key;
+  unsigned char mode = '0';
+  system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
 
-        if (key == '.') break;
-        
-        int flag = 0;
+  while (1) {
+    int r = read(0, &key, sizeof(key)); // 標準入力
+    if (r == -1) die("read");
+    if (r == 0) break;
 
-        // ↑↓が押された時
-        if ('A' <= key && key <= 'B'){
-            if (key == 'A') flag = 1; // ↑の入力のときオクターブ上げる
-            else if (key == 'B') flag = -1; // ↓の入力のとき1オクターブ下げる
+    if (key == '.') break;
+    
+    int flag = 0;
 
-            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
-            if (r == -1) die("read");
-            if (r == 0) break;
-            if (key == '.') break;
-        }
+    // ↑↓が押された時
+    if ('A' <= key && key <= 'B'){
+      if (key == 'A') flag = 1; // ↑の入力のときオクターブ上げる
+      else if (key == 'B') flag = -1; // ↓の入力のとき1オクターブ下げる
 
-        // 数字が押された時は以降の音色を変える
-        if ('0' <= key && key <= '4'){
-            if (key == '0') mode = 0; // sin
-            else if (key == '1') mode = 1; // オルガン
-            else if (key == '2') mode = 2; //木琴
-            else if (key == '3') mode = 3; // ベル
-            else if (key == '4') mode = 4; // guitar
-            continue;
-        }
-
-        double f = key_to_freq(key, n, freq, flag);
-        if (f == 0) continue;
-        
-        int duration = (int)fs * 0.3; // 0.3秒
-        double bell[duration];
-        if (mode == 3){
-            bell_sound(A, f, fs, duration, bell);
-        }
-        signed short data[PACKET];
-        for (int i = 0; i < duration/PACKET; ++i){
-	  for (int j = 0; j < PACKET; ++j){
-            switch(mode){
-                case 1: data[j] = orugan_sound(A, f, fs, i*PACKET+j); break;
-                case 2: data[j] = mokkin_sound(A, f, fs, i*PACKET+j); break;
-                case 3: data[j] = bell[i*PACKET+j]; break;
-                case 4: data[j] = guitar_sound(A, f/2, fs, i*PACKET+j); break; // guitarは低音が得意なのでデフォで低音に
-                default: data[j] = sin_wave(A, f, fs, i*PACKET+j); // mode = 0
-            }
-	  }
-            int m = write(s, &data, PACKET*sizeof(data)); // sで指定した相手に送る
-            if (m == -1) die("write");
-        }
-        for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
-            data = 0;
-            if (write(s, &data, PACKET*sizeof(data)) == -1) die("write"); // sで指定した相手に送る
-        }
+      r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
+      if (r == -1) die("read");
+      if (r == 0) break;
+      if (key == '.') break;
     }
 
-    system("/bin/stty cooked");  // 後始末
+      // 数字が押された時は以降の音色を変える
+    if ('0' <= key && key <= '4'){
+      if (key == '0') mode = 0; // sin
+      else if (key == '1') mode = 1; // オルガン
+      else if (key == '2') mode = 2; //木琴
+      else if (key == '3') mode = 3; // ベル
+      else if (key == '4') mode = 4; // guitar
+      continue;
+    }
+
+    double f = key_to_freq(key, n, freq, flag);
+    if (f == 0) continue;
+    
+    int duration = (int)fs * 0.3; // 0.3秒
+    double bell[duration];
+
+    if (mode == 3) {
+      bell_sound(A, f, fs, duration, bell);
+    }
+    
+    signed short data[PACKET_N];
+    for (int i = 0; i < duration/PACKET_N; ++i){
+      for (int j = 0; j < PACKET_N; ++j){
+        switch(mode){
+          case 1: data[j] = orugan_sound(A, f, fs, i*PACKET_N+j); break;
+          case 2: data[j] = mokkin_sound(A, f, fs, i*PACKET_N+j); break;
+          case 3: data[j] = bell[i*PACKET_N+j]; break;
+          case 4: data[j] = guitar_sound(A, f/2, fs, i*PACKET_N+j); break; // guitarは低音が得意なのでデフォで低音に
+          default: data[j] = sin_wave(A, f, fs, i*PACKET_N+j); // mode = 0
+        }
+      }
+      int m = write(s, &data, PACKET_N*sizeof(data)); // sで指定した相手に送る
+      if (m == -1) die("write");
+    }
+    for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
+      data = 0;
+      if (write(s, &data, PACKET_N*sizeof(data)) == -1) die("write"); // sで指定した相手に送る
+    }
+  }
+
+  system("/bin/stty cooked");  // 後始末
 
 }
 
-
-void recv_music(int s){ //ｓで指定した場所からデータを受け取って標準出力に出す関数
-  while(1){
-    signed short data[1024];
-    int m = recv(s,data,1024*sizeof(data),0);
+// ｓで指定した場所からデータを受け取って標準出力に出す関数
+// クライアントがサーバから音楽を受け取る．
+void recv_music_by_client(int s){ 
+  while (1) {
+    signed short data[PACKET_N];
+    int m = recv(s,data,PACKET_N*sizeof(data),0);
     if (m == -1) die("open");
     if (m == 0) break;
-    if (write(1, data, 1024*sizeof(data)) == -1) die("write");
+    if (write(1, data, PACKET_N*sizeof(data)) == -1) die("write");
   }
 }
