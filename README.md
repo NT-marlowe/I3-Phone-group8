@@ -29,13 +29,15 @@
 src/Mutitalk.cをコンパイル  
 #### サーバ側
 ```
-./a.out 50001 3 s | play -t raw -b 16 -c 1 -e s -r 44100 -
+./bin/main -l PORT NUMBER_OF_CLIENT | play -t raw -b 16 -c 1 -e s -r 44100 -
 
 ```
+まだ使えません．
 #### クライアント側
 ```
-./a.out 10.213.173.66 50000 c | play -t raw -b 16 -c 1 -e s -r 44100 -
+./bin/main IPADDRESS PORT | play -t raw -b 16 -c 1 -e s -r 44100 -
 ```
+まだ使えません．
 
 ### make(現状は楽器のみ、今後通信機能をいれたい)
 ```

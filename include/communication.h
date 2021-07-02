@@ -3,8 +3,8 @@
 
 void die(char *s);
 
-void server(int port, int number_of_host);
+void server(int port, int number_of_host, int *s);
 
-void client(char *address, int port);
+void client(char *address, int port, int *s);
 
 #endif

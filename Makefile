@@ -8,12 +8,11 @@ SRCDIR = ./src
 CFLAGS = -Wall -O2 -Wno-unused-result
 LDFLAGS = -lm
 # LDFLAGS = -L$(LIBDIR)
-# LDLIBS = -linstrumental
 
 SRC = $(SRCDIR)/main.c 
+
 OBJS = $(SRCDIR)/main.o $(SRCDIR)/instrumental.o \
 			 $(SRCDIR)/communication.o $(SRCDIR)/die.o
-# LIB = $(LIBDIR)/libinstrumental.a
 
 TARGET = $(BINDIR)/main
 
