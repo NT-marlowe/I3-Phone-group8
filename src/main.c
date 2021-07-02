@@ -23,7 +23,6 @@
 // 1入力の後、オルガンが鳴る
 
 int main(int argc, char **argv){
-
     unsigned short A = 10000;
     const int n = 13;
 
