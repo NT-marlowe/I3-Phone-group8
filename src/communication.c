@@ -40,6 +40,12 @@ void server(int port,int number_of_client, int *s){
       fprintf(stderr, "connection from %s %d succeeded!\n", inet_ntoa(client_addr.sin_addr), port);
     }
   }
+  //接続が完了したら各クライアントにダミーデータ(1)を送る
+  int data[0] = 1;
+  for(int i; i< number_of_client; i++){
+    send(s[i], data, 1, 0);
+  }
+
 
   close(ss); 
 }
