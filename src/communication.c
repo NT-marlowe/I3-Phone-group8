@@ -12,8 +12,12 @@
 
 #define N 1024
 
-void server(int port,int number_of_client){
-  int s[number_of_client];
+// server関数の引数に配列sを追加．
+// client関数の引数にポインタsを追加．
+// close(s);, for i; close(s[i])をmain()の中で実行する．
+
+void server(int port,int number_of_client, int *s){
+  // int s[number_of_client];
   int ss = socket(PF_INET,SOCK_STREAM,0);
   if (ss == -1) die("socket");
   
@@ -32,100 +36,63 @@ void server(int port,int number_of_client){
   for (int i = 0; i < number_of_client; i++) {
     s[i] = accept(ss,(struct sockaddr *)&client_addr, &len);
     if (s[i] == -1) die("accept");
-  }
-
-
-  close(ss);
-  // popen関数でrecを起動
-  FILE	*fp;
-  char *command = "rec -t raw -b 16 -c 1 -e s -r 44100 -";
-  if ( (fp = popen(command,"r") ) == NULL) die("popen error");
-
-  
-  // サーバー側がデータを送ってせき止めを解除することでクライアント共も録音を始める
-  char data[1];
-  data[0] = 1;
-  for (int i = 0; i < number_of_client; i++){
-    if (write(s[i], data, 1) == -1) die("write");
-  }
-
-
-  while(1){
-    // buf[0]にサーバー、buf[>0]にそれぞれのクライアントから受け取った波形を格納
-    char buf[number_of_client+1][N];
-    int n = fread(buf[0],sizeof(char),N,fp);
-    if(n == -1) die("fread");
-    if(n == 0) break;
-
-    for (int i = 0;i < number_of_client; i++){
-      int m = recv(s[i],buf[i+1],N,0);
-      if (m == -1) die("open"); 
-      if (m == 0) break;
-    }
-    // send[0]を標準出力、send[>0]は各々のサーバーに送る。bufを足し合わせてこれを作るが、自分の声が入らないように配慮する。
-    char send[number_of_client+1][N];
-
-    // for(int i = 0;i<N;i++){
-    for (int j = 0; j < number_of_client+1; j++) {
-      for(int i = 0; i < N; i++) {
-      	send[j][i] = 0;
-	      for(int k = 0;k < number_of_client+1; k++) {
-          if (j!=k) {
-            send[j][i] += buf[k][i];
-          }
-	      }
-      }
-    }
-    // サーバーの標準出力
-    if(write(1, send[0], N) == -1) die("write");
-    // クライアントへの書き込み
-    for(int i = 0; i < number_of_client; i++) {
-      if(write(s[i], send[i+1], N ) == -1) die("write");
+    else {
+      fprintf(stderr, "connection from %s %d succeeded!\n", inet_ntoa(client_addr.sin_addr), port);
     }
   }
-  pclose(fp);
-  for (int i = 0; i < number_of_client; i++) {
-    close(s[i]);
-  }
+
+  close(ss); 
 }
 
-
-void client(char* address, int port){
-  int s = socket(PF_INET,SOCK_STREAM,0);
-  if(s == -1) die("socket");
+void client(char* address, int port, int *s){ // このsは参照渡し
+  // int s = socket(PF_INET,SOCK_STREAM,0);  // sはmainで宣言して，client()内で接続を行う．
+  // if(*s == -1) die("socket");
   
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
-  int at = inet_aton(address,&addr.sin_addr);
-  if(at == 0) die("inet_aton");
+  int at = inet_aton(address, &addr.sin_addr);
+  if (at == 0) die("inet_aton");
   addr.sin_port = htons(port);
-  int ret = connect(s, (struct sockaddr *)&addr, sizeof(addr));
-  if(ret == -1) die("connet");
-  // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
-  recv(s,0,1,0);
-
-  // popenによってrecを起動
-  FILE	*fp;
-  char *command = "rec -t raw -b 16 -c 1 -e s -r 44100 -";
-  if ( (fp = popen(command,"r")) == NULL) die("popen error");
-  
-  while(1){
-    
-    char buf[N];
-    int n = fread(buf,sizeof(char),N,fp);
-    if (n == -1) die("fread");
-    if (n == 0) break;
-    if (write(s, buf, N) == -1) die("write");
-
-    char buf2[N];
-    int m = recv(s,buf2,N,0);
-    if (m == -1) die("open");
-    if (m == 0) break;
-    if (write(1, buf2, N) == -1) die("write");
+  int ret = connect(*s, (struct sockaddr *)&addr, sizeof(addr));
+  if (ret == -1) die("connet");
+  else {
+    fprintf(stderr, "connection to %s %d succeeded!\n", address, port);
   }
-  pclose(fp);
-  close(s);
+
+  // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
+  recv(*s,0,1,0);
 }
+
+
+// client()とserver()の使い方
+// mainの中でsとssを宣言しておく(mainの最後にcloseするのを忘れるな！)
+    // 
+    // int s = socket(PF_INET, SOCK_STREAM, 0);
+    // int *ss = NULL;
+    // int number_of_client = 0;
+
+// 引数が3つの時はクライアント．　./bin/main address port の順に渡す．
+    // if (argc == 3) {  // a.out address port
+    //     int port = atoi(argv[2]);
+    //     client(argv[1], port, &s);
+    // }
+// 引数が4つの時はサーバ．      ./bin/main -l port number_of_client の順に渡す．
+    // else if (argc == 4) {   // a.out -l port numOfClient
+    //     int port = atoi(argv[2]);
+    //     number_of_client = atoi(argv[3]);
+    //     ss = (int*)calloc(number_of_client, sizeof(int));
+    //     if (ss == NULL) {
+    //         die("calloc");
+    //     }
+    //     server(port, number_of_client, ss);
+    // }
+    // ここで接続完了
+    // close(s);
+    // for (int i = 0; i < number_of_client; i++) close(ss[i]);
+    
+    
+    // if (ss != NULL) free(ss);
+        
 
 
 

@@ -1,10 +1,12 @@
 #include <fcntl.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "../include/instrumental.h"
 #include "../include/communication.h"
 #include "../include/die.h"
@@ -19,11 +21,6 @@
 // ↓キー入力の後、a,bなどを入力するとオクターブ下が出る
 // 0(zero)入力の後、サイン波が鳴る(デフォルト)
 // 1入力の後、オルガンが鳴る
-
-// void die(char *s){
-//     perror(s);
-//     exit(1);
-// }
 
 int main(int argc, char **argv){
 
@@ -96,6 +93,31 @@ int main(int argc, char **argv){
     }
 
     system("/bin/stty cooked");  // 後始末
+    
+    // client()とserver()の使い方
+    // 
+    // int s = socket(PF_INET, SOCK_STREAM, 0);
+    // int *ss = NULL;
+    // int number_of_client = 0;
 
+    // if (argc == 3) {  // a.out address port
+    //     int port = atoi(argv[2]);
+    //     client(argv[1], port, &s);
+    // }
+
+    // else if (argc == 4) {   // a.out -l port numOfClient
+    //     int port = atoi(argv[2]);
+    //     number_of_client = atoi(argv[3]);
+    //     ss = (int*)calloc(number_of_client, sizeof(int));
+    //     if (ss == NULL) {
+    //         die("calloc");
+    //     }
+    //     server(port, number_of_client, ss);
+    // }
+    // ここで接続完了
+    // close(s);
+    // for (int i = 0; i < number_of_client; i++) close(ss[i]);
+    // free(ss);
+        
     return 0;
 }
