@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <errno.h>
@@ -27,6 +28,8 @@ void *send_data_to_client(void *arg) {
 
   int n = send(s, buf, N, 0);
   if (n == -1) die("send");
+
+  return NULL;
 }
 
 void *receive_data_from_client(void *arg){
@@ -43,4 +46,6 @@ void *receive_data_from_client(void *arg){
   else {
     ;
   }
+
+  return NULL;
 }

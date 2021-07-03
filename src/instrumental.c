@@ -230,6 +230,7 @@ void *send_music_to_server(void *arg){
   }
 
   system("/bin/stty cooked");  // 後始末
+  return NULL;
 }
 
 // ｓで指定した場所からデータを受け取って標準出力に出す関数
@@ -243,4 +244,6 @@ void *recv_music_from_server(void *arg){
     if (m == 0) break;
     if (write(1, data, PACKET_N*sizeof(data)) == -1) die("write");
   }
+
+  return NULL;
 }
