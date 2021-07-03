@@ -55,7 +55,7 @@ void server(int port,int number_of_client, int *s){
   data[0] = 1;
   
   for(int i = 0; i< number_of_client; i++){
-    send(s[i], data, 1, 0);
+    if (send(s[i], data, 1, 0) == -1) die("send dummy_data");
   }
 
 
@@ -78,7 +78,7 @@ void client(char* address, int port, int *s){ // このsは参照渡し
   }
 
   // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
-  recv(*s,0,1,0);
+  if (recv(*s,0,1,0) == -1) die("recv dummy_data");
 }
 
 

@@ -63,13 +63,18 @@ int main(int argc, char **argv) {
 				arg[i].buf = waves[i];
 		}
 
+		int ret_send, ret_receive;
+
 		while(1){
 			for (int i = 0; i < number_of_client; ++i){
-				pthread_create(&tid[i], NULL, receive_data_from_client, (void*)&arg[i]);
+				ret_receive = pthread_create(&tid[i], NULL, receive_data_from_client, (void*)&arg[i]);
+				if (ret_receive != 0) die("pthread_create: receive_data_from_client");
 			}
 
 			for (int i = 0; i < number_of_client; ++i){
-				pthread_join(tid[i], NULL);
+				ret_receive = pthread_join(tid[i], NULL);
+				if (ret_receive != 0) die("pthread_join: receive_data_from_client");
+
 			}
 
 			signed short *result = (signed short*)calloc(N, sizeof(signed short));
@@ -77,11 +82,14 @@ int main(int argc, char **argv) {
 
 			for (int i = 0; i < number_of_client; ++i){
 				arg[i].buf = result;
-				pthread_create(&tid[i], NULL, send_data_to_client, (void*)&arg[i]);
+				ret_send = pthread_create(&tid[i], NULL, send_data_to_client, (void*)&arg[i]);
+				if (ret_send != 0) die("pthread_create: send_data_to_client");
 			}
 
+
 			for (int i = 0; i < number_of_client; ++i){
-				pthread_join(tid[i], NULL);
+				ret_send = pthread_join(tid[i], NULL);
+				if (ret_send != 0) die("pthread_join: send_data_to_client");
 			}
 
 			free(result);
