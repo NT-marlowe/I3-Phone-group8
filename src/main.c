@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 				if (ret_receive != 0) die("pthread_join: receive_data_from_client");
 
 			}
-
+fprintf(stderr, "%d\n",waves[0][150]);//消す
 			signed short *result = (signed short*)calloc(N, sizeof(signed short));
 			sum_waves(waves, result, number_of_client);
 
