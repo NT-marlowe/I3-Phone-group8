@@ -62,8 +62,8 @@ int main(int argc, char **argv) {
 		int ret_send, ret_receive;
 
 		// send_music_from_client とrecv_music_by_clientをpthreadで並列に
-		ret_send = pthread_create(&thread_send, NULL, send_music_to_server, (void*)*s);
-		ret_receive = pthread_create(&thread_receive, NULL, recv_music_from_server, (void*)*s);
+		ret_send = pthread_create(&thread_send, NULL, send_music_to_server, (void*)&s);
+		ret_receive = pthread_create(&thread_receive, NULL, recv_music_from_server, (void*)&s);
 
 		if (ret_send != 0) die("pthread_create:send");
 		if (ret_receive != 0) die("pthread_create:receive");
