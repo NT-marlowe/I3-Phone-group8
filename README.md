@@ -21,8 +21,41 @@
     ├── main.c 
     ├── instrumental.c
     ├── communication.c
-    └── compression.c
+    ├── mypthread.c
+    └── ~compression.c~
+
 ```
+## 各ファイルに含まれる関数一覧
+### instrumental.c
+
+|  関数名  |  入力  |  出力 | 機能  |
+|  ----  |  ----  |  ----  |  ----  |
+|  scale_freq |  int n, double freq[n]  |　void(freq配列の操作)  |  n個(オクターブ分)の周波数の配列を返す |
+|  key_to_freq  |  char key, int n, double freq[n], int flag  | double  freq | 各キーボード入力に対する音の周波数を返す。flagが0なら基本音、1ならオクターブ上、など  | 
+|  sin_wave  |  short A, double f, int fs, int n  | signed short res | 振幅A、周波数f, 標本化周波数fsの正弦波resを返す  | 
+|  楽器たち  |  short A, double f, int fs, int nなど  | signed short res |  フーリエ級数展開などを用いて各楽器に対応する波resを返す  | 
+|  send_music_server  | 情報が詰まった構造体 arg | void |  pthreadに渡すようの関数。キーボード入力によりサーバへと波形を渡す  | 
+|  recv_music_from_server  | 情報が詰まった構造体 arg | void |  pthreadに渡すようの関数。サーバから受け取った波形を標準出力に流す  | 
+
+### communication.c 接続用
+|  関数名  |  入力  |  出力 | 機能  |
+|  ----  |  ----  |  ----  |  ----  |
+|  server |  int port, int number_of_client, int *s |　void | サーバがnumber_of_client分のクライアントと接続する  |
+|  client |  char* address, int port, int *s |　void | クライントがサーバと接続する  |
+
+### die.c
+|  関数名  |  入力  |  出力 | 機能  |
+|  ----  |  ----  |  ----  |  ----  |
+|  die |  char *s |　void | エラー出力用  |
+
+### myptread.c サーバ側で使用する
+|  関数名  |  入力  |  出力 | 機能  |
+|  ----  |  ----  |  ----  |  ----  |
+|  sum |  signed short **waves, signed short *result, int number_of_client |　void | resulutにwavesを人数分足した波を代入する |
+|  send_data_to_client |  情報が詰まった構造体 arg |　void | pthreadに渡すようの関数。サーバが各クライアントにデータを送る |
+|  recieve_data_from_client |  情報が詰まった構造体 arg |　void | pthreadに渡すようの関数。各クライアントから送られてきたデータをサーバが受け取る |
+
+
 
 ## 実行方法
 ### 多人数通信  

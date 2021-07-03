@@ -1,5 +1,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <errno.h>
 #include "../include/die.h"
 #include "../include/mypthread.h"
 
@@ -33,5 +34,10 @@ void *receive_data_from_client(void *arg){
   int s = pd->s;
   signed short *buf = pd->buf;
   int m = recv(s,buf,N,0);
-  if (m == -1) die("recv");
+  if (errno == 11) {
+    for(int i = 0; i < N; i++){
+      buf[i] = 0;
+    }
+  }
+  else if (m == -1) die("recv");
 }

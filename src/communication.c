@@ -40,6 +40,16 @@ void server(int port,int number_of_client, int *s){
       fprintf(stderr, "connection from %s %d succeeded!\n", inet_ntoa(client_addr.sin_addr), port);
     }
   }
+
+  //このソケットを用いたすべてのread、recvに対してタイムアウトを設定する
+  //タイムアウトしたときのerrnoは11
+  struct timeval tv;
+  tv.tv_sec = 0;
+  tv.tv_usec = 1000000*1024/44100;
+  for (int i = 0; i < number_of_client; i++) {
+    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
+  }
+  
   //接続が完了したら各クライアントにダミーデータ(1)を送る
   int data[1];
   data[0] = 1;
