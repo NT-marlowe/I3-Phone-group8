@@ -12,7 +12,8 @@ LDFLAGS = -lm
 SRC = $(SRCDIR)/main.c 
 
 OBJS = $(SRCDIR)/main.o $(SRCDIR)/instrumental.o \
-			 $(SRCDIR)/communication.o $(SRCDIR)/die.o
+			 $(SRCDIR)/communication.o $(SRCDIR)/die.o \
+			 $(SRCDIR)/mypthread.o
 
 TARGET = $(BINDIR)/main
 
