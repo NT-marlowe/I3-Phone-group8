@@ -40,4 +40,7 @@ void *receive_data_from_client(void *arg){
     }
   }
   else if (m == -1) die("recv");
+  else {
+    ;
+  }
 }
