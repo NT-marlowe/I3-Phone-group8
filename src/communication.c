@@ -80,8 +80,9 @@ void client(char* address, int port, int *s){ // このsは参照渡し
     fprintf(stderr, "connection to %s %d succeeded!\n", address, port);
   }
 
+  int data = 0;
   // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
-  if (recv(*s, 0, sizeof(int), 0) == -1) die("recv dummy_data");
+  if (recv(*s, &data, sizeof(int), 0) == -1) die("recv dummy_data");
 }
 
 
