@@ -47,7 +47,7 @@ void server(int port,int number_of_client, int *s){
   tv.tv_sec = 0;
   tv.tv_usec = 1000000*1024/44100;
   for (int i = 0; i < number_of_client; i++) {
-    setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
+    setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
   }
   
   //接続が完了したら各クライアントにダミーデータ(1)を送る
