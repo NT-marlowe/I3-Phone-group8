@@ -147,7 +147,8 @@ signed short guitar_sound(const signed short A, const double f, const int fs, co
 
 // sで指定した場所にキー入力から変換された波形を送る関数
 // クライアントからサーバに波形を送る
-void send_music_from_client(int s){	
+void *send_music_from_client(void *arg){	
+  int s = *((int*)arg);
   unsigned short A = 10000;
   const int n = 13;
 
@@ -226,7 +227,8 @@ void send_music_from_client(int s){
 
 // ｓで指定した場所からデータを受け取って標準出力に出す関数
 // クライアントがサーバから音楽を受け取る．
-void recv_music_by_client(int s){ 
+void *recv_music_by_client(void *arg){ 
+  int s = *((int*)arg);
   while (1) {
     signed short data[PACKET_N];
     int m = recv(s,data,PACKET_N*sizeof(data),0);
