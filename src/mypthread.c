@@ -26,7 +26,7 @@ void *send_data_to_client(void *arg) {
   int s = p->s;
   signed short *buf = p->buf;
 
-  int n = send(s, buf, N, 0);
+  int n = send(s, buf, N * sizeof(buf[0]), 0);
   if (n == -1) die("send");
 
   return NULL;
@@ -36,7 +36,7 @@ void *receive_data_from_client(void *arg){
   Args_pthread *pd = (Args_pthread*)arg;
   int s = pd->s;
   signed short *buf = pd->buf;
-  int m = recv(s,buf,N,0);
+  int m = recv(s, buf, N * sizeof(signed short),0);
   if (errno == 11) {
     for(int i = 0; i < N; i++){
       buf[i] = 0;
