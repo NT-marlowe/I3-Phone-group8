@@ -6,13 +6,15 @@ LIBDIR = ./lib
 SRCDIR = ./src
 
 CFLAGS = -Wall -O2 -Wno-unused-result
-LDFLAGS = -lm
+LDFLAGS = -lm -lpthread
+
 # LDFLAGS = -L$(LIBDIR)
 
 SRC = $(SRCDIR)/main.c 
 
 OBJS = $(SRCDIR)/main.o $(SRCDIR)/instrumental.o \
-			 $(SRCDIR)/communication.o $(SRCDIR)/die.o
+			 $(SRCDIR)/communication.o $(SRCDIR)/die.o \
+			 $(SRCDIR)/mypthread.o
 
 TARGET = $(BINDIR)/main
 
