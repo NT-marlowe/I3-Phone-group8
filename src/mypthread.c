@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "../include/die.h"
-#include "../include/pthread.h"
+#include "../include/mypthread.h"
 
 #define N 1024
 

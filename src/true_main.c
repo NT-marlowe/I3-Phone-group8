@@ -39,12 +39,12 @@ int main(int argc, char **argv) {
 		number_of_client = atoi(argv[3]);
 		ss = (int*)calloc(number_of_client, sizeof(int));
     if (ss == NULL) die("calloc");
-		server(port, number_of_client, )
+		server(port, number_of_client, ss);
 	}
 	else { // client
 		char *address = argv[1];
 		int port = atoi(argv[2]);
-		client(address, port, *s);
+		client(address, port, &s);
 	}
 
 	/* ここで接続完了 */
@@ -58,7 +58,26 @@ int main(int argc, char **argv) {
 	}
 
 	else {
+		pthread_t thread_send, thread_receive;
+		int ret_send, ret_receive;
+
 		// send_music_from_client とrecv_music_by_clientをpthreadで並列に
+		ret_send = pthread_create(&thread_send, NULL, send_music_to_server, (void*)*s);
+		ret_receive = pthread_create(&thread_receive, NULL, recv_music_from_server, (void*)*s);
+
+		if (ret_send != 0) die("pthread_create:send");
+		if (ret_receive != 0) die("pthread_create:receive");
+
+		fprintf(stderr, "succeeded to create threads\n");
+
+		// プログラムが終わる時
+		ret_send = pthread_join(thread_send, NULL);
+		ret_receive = pthread_join(thread_receive, NULL);
+
+		if (ret_send != 0) die("pthread_join:send");
+		if (ret_receive != 0) die("pthread_join:receive");
+
+		fprintf(stderr, "client job done\n");
 	}
 				
 
