@@ -222,7 +222,6 @@ void *send_music_to_server(void *arg){
   }
 
   system("/bin/stty cooked");  // 後始末
-
 }
 
 // ｓで指定した場所からデータを受け取って標準出力に出す関数
