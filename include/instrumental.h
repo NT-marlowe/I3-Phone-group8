@@ -17,8 +17,8 @@ void bell_sound(const signed short A, const double f, const int fs, const int du
 
 signed short guitar_sound(const signed short A, const double f, const int fs, const int n);
 
-void send_music_from_client(int s);
+void *send_music_to_server(void *arg);
 
-void recv_music_by_client(int s);
+void *recv_music_from_server(void *arg);
 
 #endif
