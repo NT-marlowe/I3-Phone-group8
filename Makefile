@@ -7,6 +7,7 @@ SRCDIR = ./src
 
 CFLAGS = -Wall -O2 -Wno-unused-result
 LDFLAGS = -lm -lpthread
+
 # LDFLAGS = -L$(LIBDIR)
 
 SRC = $(SRCDIR)/main.c 
