@@ -30,8 +30,8 @@ int main(int argc, char **argv) {
 	if (argc == 3) is_server = 0;
 	else if (argc == 4 && strcmp(argv[1], "l") == 0) is_server = 1;
 	else {
-		fprintf("usage as client: ./bin/main IPADDRESS PORT\n");
-		fprintf("usage as server: ./bin/main -l PORT NUMBER_OF_CLIENT\n");
+		fprintf(stderr, "usage as client: ./bin/main IPADDRESS PORT\n");
+		fprintf(stderr, "usage as server: ./bin/main -l PORT NUMBER_OF_CLIENT\n");
 		exit(EXIT_FAILURE);
 	}
 
