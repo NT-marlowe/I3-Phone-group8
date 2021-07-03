@@ -13,6 +13,7 @@
 #include "../include/die.h"
 #include "../include/mypthread.h"
 
+#define N 1024
 
 // ↑キー入力の後、a,bなどを入力するとオクターブ上が出る
 // ↓キー入力の後、a,bなどを入力するとオクターブ下が出る
@@ -49,12 +50,45 @@ int main(int argc, char **argv) {
 
 	/* ここで接続完了 */
 
-	if (is_server) {
-		// pthread_create;
-		// join;
-		sum_waves();
-		// pthread_create;
-		// join;
+	if (is_server) { // server
+		Args_pthread arg[number_of_client];
+		pthread_t tid[number_of_client]; // スレッド識別変数
+		signed short **waves = (signed short**)calloc(number_of_client, sizeof(signed short *));
+		signed short *base_waves = (signed short*)calloc(N * number_of_client, sizeof(signed short));
+
+		for (int i = 0; i < number_of_client; ++i){
+				// tid[i] = i;
+				arg[i].s = ss[i];
+				waves[i] = base_waves + i * N;
+				arg[i].buf = waves[i];
+		}
+
+		while(1){
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_create(&tid[i], NULL, receive_data_from_client, (void*)&arg[i]);
+			}
+
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_join(tid[i], NULL);
+			}
+
+			signed short *result = (signed short*)calloc(N, sizeof(signed short));
+			sum_waves(waves, result, number_of_client);
+
+			for (int i = 0; i < number_of_client; ++i){
+				arg[i].buf = result;
+				pthread_create(&tid[i], NULL, send_data_to_client, (void*)&arg[i]);
+			}
+
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_join(tid[i], NULL);
+			}
+
+			free(result);
+		}
+
+		free(base_waves);
+		free(waves);
 	}
 
 	else {
