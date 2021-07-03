@@ -235,7 +235,7 @@ void *recv_music_from_server(void *arg){
   int s = *((int*)arg);
   while (1) {
     signed short data[PACKET_N];
-    int m = recv(s,data,PACKET_N*sizeof(data),0);
+    int m = recv(s, data, PACKET_N*sizeof(data[0]),0);
     if (m == -1) die("open");
     if (m == 0) break;
     if (write(1, data, PACKET_N*sizeof(data)) == -1) die("write");
