@@ -7,116 +7,118 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <pthread.h>
 #include "../include/instrumental.h"
 #include "../include/communication.h"
 #include "../include/die.h"
+#include "../include/mypthread.h"
 
-// 実行方法
-// gcc -c main.c
-// gcc -c instrumental.c
-// gcc main.o instrumental.o -lm
-// ./a.out | play -t raw -b 16 -c 1 -e s -r 44100 -
+#define N 1024
 
 // ↑キー入力の後、a,bなどを入力するとオクターブ上が出る
 // ↓キー入力の後、a,bなどを入力するとオクターブ下が出る
 // 0(zero)入力の後、サイン波が鳴る(デフォルト)
 // 1入力の後、オルガンが鳴る
 
-int main(int argc, char **argv){
-    unsigned short A = 10000;
-    const int n = 13;
+int main(int argc, char **argv) {
 
-    const int fs = 44100; // 標本化周波数
-    double freq[n];
-    scale_freq(n, freq);
-  
-    unsigned char key;
-    unsigned char mode = '0';
-    system("/bin/stty raw onlcr");  // enterを押さなくてもキー入力を受け付けるようになる
+  int s = socket(PF_INET, SOCK_STREAM, 0);
+  int *ss = NULL;
+	int number_of_client = 0;
+	
+	int is_server = -1;
+	if (argc == 3) is_server = 0;
+	else if (argc == 4 && strcmp(argv[1], "l") == 0) is_server = 1;
+	else {
+		fprintf(stderr, "usage as client: ./bin/main IPADDRESS PORT\n");
+		fprintf(stderr, "usage as server: ./bin/main -l PORT NUMBER_OF_CLIENT\n");
+		exit(EXIT_FAILURE);
+	}
 
-    while(1){
-        int r = read(0, &key, sizeof(key)); // 標準入力
-        if (r == -1) die("read");
-        if (r == 0) break;
+	if (is_server) { // server
+		int port = atoi(argv[2]);
+		number_of_client = atoi(argv[3]);
+		ss = (int*)calloc(number_of_client, sizeof(int));
+    if (ss == NULL) die("calloc");
+		server(port, number_of_client, ss);
+	}
+	else { // client
+		char *address = argv[1];
+		int port = atoi(argv[2]);
+		client(address, port, &s);
+	}
 
-        if (key == '.') break;
-        
-        int flag = 0;
+	/* ここで接続完了 */
 
-        // ↑↓が押された時
-        if ('A' <= key && key <= 'B'){
-            if (key == 'A') flag = 1; // ↑の入力のときオクターブ上げる
-            else if (key == 'B') flag = -1; // ↓の入力のとき1オクターブ下げる
+	if (is_server) { // server
+		Args_pthread arg[number_of_client];
+		pthread_t tid[number_of_client]; // スレッド識別変数
+		signed short **waves = (signed short**)calloc(number_of_client, sizeof(signed short *));
+		signed short *base_waves = (signed short*)calloc(N * number_of_client, sizeof(signed short));
 
-            r = read(0, &key, sizeof(key)); // 標準入力を再度読み込み
-            if (r == -1) die("read");
-            if (r == 0) break;
-            if (key == '.') break;
-        }
+		for (int i = 0; i < number_of_client; ++i){
+				// tid[i] = i;
+				arg[i].s = ss[i];
+				waves[i] = base_waves + i * N;
+				arg[i].buf = waves[i];
+		}
 
-        // 数字が押された時は以降の音色を変える
-        if ('0' <= key && key <= '4'){
-            if (key == '0') mode = 0; // sin
-            else if (key == '1') mode = 1; // オルガン
-            else if (key == '2') mode = 2; //木琴
-            else if (key == '3') mode = 3; // ベル
-            else if (key == '4') mode = 4; // guitar
-            continue;
-        }
+		while(1){
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_create(&tid[i], NULL, receive_data_from_client, (void*)&arg[i]);
+			}
 
-        double f = key_to_freq(key, n, freq, flag);
-        if (f == 0) continue;
-        
-        int duration = (int)fs * 0.3; // 0.3秒
-        double bell[duration];
-        if (mode == 3){
-            bell_sound(A, f, fs, duration, bell);
-        }
-        signed short data;
-        for (int i = 0; i < duration; ++i){
-            switch(mode){
-                case 1: data = orugan_sound(A, f, fs, i); break;
-                case 2: data = mokkin_sound(A, f, fs, i); break;
-                case 3: data = bell[i]; break;
-                case 4: data = guitar_sound(A, f/2, fs, i); break; // guitarは低音が得意なのでデフォで低音に
-                default: data = sin_wave(A, f, fs, i); // mode = 0
-            }
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_join(tid[i], NULL);
+			}
 
-            int m = write(1, &data, sizeof(data)); // 標準出力に出す
-            if (m == -1) die("write");
-        }
-        for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
-            data = 0;
-            if (write(1, &data, sizeof(data)) == -1) die("write"); // 標準出力に出す
-        }
-    }
+			signed short *result = (signed short*)calloc(N, sizeof(signed short));
+			sum_waves(waves, result, number_of_client);
 
-    system("/bin/stty cooked");  // 後始末
-    
-    // client()とserver()の使い方
-    // 
-    // int s = socket(PF_INET, SOCK_STREAM, 0);
-    // int *ss = NULL;
-    // int number_of_client = 0;
+			for (int i = 0; i < number_of_client; ++i){
+				arg[i].buf = result;
+				pthread_create(&tid[i], NULL, send_data_to_client, (void*)&arg[i]);
+			}
 
-    // if (argc == 3) {  // a.out address port
-    //     int port = atoi(argv[2]);
-    //     client(argv[1], port, &s);
-    // }
+			for (int i = 0; i < number_of_client; ++i){
+				pthread_join(tid[i], NULL);
+			}
 
-    // else if (argc == 4) {   // a.out -l port numOfClient
-    //     int port = atoi(argv[2]);
-    //     number_of_client = atoi(argv[3]);
-    //     ss = (int*)calloc(number_of_client, sizeof(int));
-    //     if (ss == NULL) {
-    //         die("calloc");
-    //     }
-    //     server(port, number_of_client, ss);
-    // }
-    // ここで接続完了
-    // close(s);
-    // for (int i = 0; i < number_of_client; i++) close(ss[i]);
-    // free(ss);
-        
-    return 0;
+			free(result);
+		}
+
+		free(base_waves);
+		free(waves);
+	}
+
+	else {
+		pthread_t thread_send, thread_receive;
+		int ret_send, ret_receive;
+
+		// send_music_from_client とrecv_music_by_clientをpthreadで並列に
+		ret_send = pthread_create(&thread_send, NULL, send_music_to_server, (void*)&s);
+		ret_receive = pthread_create(&thread_receive, NULL, recv_music_from_server, (void*)&s);
+
+		if (ret_send != 0) die("pthread_create:send");
+		if (ret_receive != 0) die("pthread_create:receive");
+
+		fprintf(stderr, "succeeded to create threads\n");
+
+		// プログラムが終わる時
+		ret_send = pthread_join(thread_send, NULL);
+		ret_receive = pthread_join(thread_receive, NULL);
+
+		if (ret_send != 0) die("pthread_join:send");
+		if (ret_receive != 0) die("pthread_join:receive");
+
+		fprintf(stderr, "client job done\n");
+	}
+				
+
+	close(s);
+	if (ss != NULL) {
+		for (int i = 0; i < number_of_client; i++) close(ss[i]);
+		free(ss);
+	}
+	return 0;
 }
