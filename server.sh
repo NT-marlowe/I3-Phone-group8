@@ -8,4 +8,4 @@ if [ $# -ne 3 ]; then
 fi
 
 # ./bin/main 10.213.150.58 50000 | play -t raw -b 16 -c 1 -e s -r 44100 -
-./bin/main $1 $2 $3 | play -t raw -b 16 -c 1 -e s -r 44100 -
+./bin/main $1 $2 $3 

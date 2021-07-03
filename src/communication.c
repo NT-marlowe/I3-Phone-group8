@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <errno.h>
 #include "../include/die.h"
 
 #define N 1024
@@ -43,11 +44,13 @@ void server(int port,int number_of_client, int *s){
 
   //このソケットを用いたすべてのread、recvに対してタイムアウトを設定する
   //タイムアウトしたときのerrnoは11
-  struct timeval tv;
-  tv.tv_sec = 0;
-  tv.tv_usec = 1000000*1024/44100;
+  struct timespec tsp;
+  tsp.tv_sec = 0;
+  tsp.tv_nsec = (long)(N / 44100 * 1e9);  // 掛け算の順番が重要．1e9を超えないような計算順序にする．
+  // fprintf(stderr, "tv_sec = %ld, tv_nsec = %ld\n", tsp.tv_sec, tsp.tv_nsec);
   for (int i = 0; i < number_of_client; i++) {
-    setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
+    int opt = setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (void *)&tsp, (socklen_t)sizeof(struct timespec));
+    if (opt == -1) die("setstockopt");
   }
   
   //接続が完了したら各クライアントにダミーデータ(1)を送る
