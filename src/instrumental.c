@@ -217,12 +217,15 @@ void *send_music_to_server(void *arg){
           default: data[j] = sin_wave(A, f, fs, i*PACKET_N+j); // mode = 0
         }
       }
-      int m = write(s, &data, PACKET_N*sizeof(data)); // sで指定した相手に送る
+      int m = write(s, data, PACKET_N*sizeof(data[0])); // sで指定した相手に送る
       if (m == -1) die("write");
     }
-    for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
-      data[i] = 0;
-      if (write(s, &data, PACKET_N*sizeof(data)) == -1) die("write"); // sで指定した相手に送る
+
+    for (int i = 0; i < 6; ++i){ // 前の音が残らないように無音を書き込む
+      for (int j = 0; j < PACKET_N; ++j){
+        data[j] = 0;
+      }
+      if (write(s, data, PACKET_N*sizeof(data[0])) == -1) die("write");
     }
   }
 
