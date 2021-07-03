@@ -91,6 +91,11 @@ int main(int argc, char **argv) {
 				ret_send = pthread_join(tid[i], NULL);
 				if (ret_send != 0) die("pthread_join: send_data_to_client");
 			}
+            
+            for (int i = 0; i < number_of_client; i++) {
+                arg[i].buf = waves[i];
+            }
+            
 
 			free(result);
 		}
