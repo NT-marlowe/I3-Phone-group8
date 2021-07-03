@@ -51,8 +51,10 @@ void server(int port,int number_of_client, int *s){
   }
   
   //接続が完了したら各クライアントにダミーデータ(1)を送る
-  int data[0] = 1;
-  for(int i; i< number_of_client; i++){
+  int data[1];
+  data[0] = 1;
+  
+  for(int i = 0; i< number_of_client; i++){
     send(s[i], data, 1, 0);
   }
 

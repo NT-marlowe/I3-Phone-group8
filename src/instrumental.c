@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include "../include/die.h"
+
 #include <math.h>
 
 // 1回の通信で送るデータバイト数
@@ -216,7 +221,7 @@ void *send_music_to_server(void *arg){
       if (m == -1) die("write");
     }
     for (int i = 0; i < duration / 2; ++i){ // 前の音が残らないように無音を書き込む
-      data = 0;
+      data[i] = 0;
       if (write(s, &data, PACKET_N*sizeof(data)) == -1) die("write"); // sで指定した相手に送る
     }
   }
