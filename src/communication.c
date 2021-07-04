@@ -49,7 +49,7 @@ void server(int port,int number_of_client, int *s){
   tsp.tv_nsec = (long)(N / 44100 * 1e9);  // 掛け算の順番が重要．1e9を超えないような計算順序にする．
   // fprintf(stderr, "tv_sec = %ld, tv_nsec = %ld\n", tsp.tv_sec, tsp.tv_nsec);
   for (int i = 0; i < number_of_client; i++) {
-    int opt = setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (void *)&tsp, (socklen_t)sizeof(struct timespec));
+    int opt = setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (void *)&tsp, (socklen_t)sizeof(tsp));
     if (opt == -1) die("setstockopt");
   }
   
@@ -75,7 +75,7 @@ void client(char* address, int port, int *s){ // このsは参照渡し
   if (at == 0) die("inet_aton");
   addr.sin_port = htons(port);
   int ret = connect(*s, (struct sockaddr *)&addr, sizeof(addr));
-  if (ret == -1) die("connet");
+  if (ret == -1) die("connect");
   else {
     fprintf(stderr, "connection to %s %d succeeded!\n", address, port);
   }
