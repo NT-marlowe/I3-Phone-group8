@@ -5,7 +5,7 @@ struct args_pthread
 {
   int s; // file descriptor for send and recv
   signed short *buf; // pointer of the head of data array
-  int fail;
+  int *fail;
 };
 
 typedef struct args_pthread Args_pthread;
