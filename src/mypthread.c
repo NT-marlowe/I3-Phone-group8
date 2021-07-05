@@ -36,11 +36,16 @@ void *receive_data_from_client(void *arg){
   Args_pthread *pd = (Args_pthread*)arg;
   int s = pd->s;
   signed short *buf = pd->buf;
+  int *fail = pd->fail;
+
+ 
+
   int m = recv(s, buf, N * sizeof(signed short),0);
   if (errno == 11) {
     for(int i = 0; i < N; i++){
       buf[i] = 0;
     }
+    *fail += 1;
   }
   else if (m == -1) die("recv");
   else {

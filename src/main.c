@@ -55,12 +55,13 @@ int main(int argc, char **argv) {
 		pthread_t tid[number_of_client]; // スレッド識別変数
 		signed short **waves = (signed short**)calloc(number_of_client, sizeof(signed short *));
 		signed short *base_waves = (signed short*)calloc(N * number_of_client, sizeof(signed short));
-
+		int fail = 0;
 		for (int i = 0; i < number_of_client; ++i){
 				// tid[i] = i;
 				arg[i].s = ss[i];
 				waves[i] = base_waves + i * N;
 				arg[i].buf = waves[i];
+				arg[i].fail = &fail;
 		}
 
 		int ret_send, ret_receive;
@@ -91,11 +92,12 @@ int main(int argc, char **argv) {
 				ret_send = pthread_join(tid[i], NULL);
 				if (ret_send != 0) die("pthread_join: send_data_to_client");
 			}
-            
+
             for (int i = 0; i < number_of_client; i++) {
                 arg[i].buf = waves[i];
             }
-            
+	    if(fail == 0) {usleep(1e6*N/44100);}
+            fail = 0;
 
 			free(result);
 		}

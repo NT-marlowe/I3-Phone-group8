@@ -44,13 +44,12 @@ void server(int port,int number_of_client, int *s){
 
   //このソケットを用いたすべてのread、recvに対してタイムアウトを設定する
   //タイムアウトしたときのerrnoは11
-  struct timespec tsp;
-  tsp.tv_sec = 0;
-  tsp.tv_nsec = (long)(N / 44100 * 1e9);  // 掛け算の順番が重要．1e9を超えないような計算順序にする．
-  // fprintf(stderr, "tv_sec = %ld, tv_nsec = %ld\n", tsp.tv_sec, tsp.tv_nsec);
+  struct timeval tv;
+  tv.tv_sec = 0;
+  tv.tv_usec = 1e6*N/44100;
   for (int i = 0; i < number_of_client; i++) {
-    int opt = setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (void *)&tsp, (socklen_t)sizeof(tsp));
-    if (opt == -1) die("setstockopt");
+    setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
+    if (setsockopt(s[i], SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv)) == -1) die("setsockopt");
   }
   
   //接続が完了したら各クライアントにダミーデータ(1)を送る
@@ -84,47 +83,5 @@ void client(char* address, int port, int *s){ // このsは参照渡し
   // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
   if (recv(*s, &data, sizeof(int), 0) == -1) die("recv dummy_data");
 }
-
-
-// client()とserver()の使い方
-// mainの中でsとssを宣言しておく(mainの最後にcloseするのを忘れるな！)
-    // 
-    // int s = socket(PF_INET, SOCK_STREAM, 0);
-    // int *ss = NULL;
-    // int number_of_client = 0;
-
-// 引数が3つの時はクライアント．　./bin/main address port の順に渡す．
-    // if (argc == 3) {  // a.out address port
-    //     int port = atoi(argv[2]);
-    //     client(argv[1], port, &s);
-    // }
-// 引数が4つの時はサーバ．      ./bin/main -l port number_of_client の順に渡す．
-    // else if (argc == 4) {   // a.out -l port numOfClient
-    //     int port = atoi(argv[2]);
-    //     number_of_client = atoi(argv[3]);
-    //     ss = (int*)calloc(number_of_client, sizeof(int));
-    //     if (ss == NULL) {
-    //         die("calloc");
-    //     }
-    //     server(port, number_of_client, ss);
-    // }
-    // ここで接続完了
-    // close(s);
-    // for (int i = 0; i < number_of_client; i++) close(ss[i]);
-    
-    
-    // if (ss != NULL) free(ss);
-        
-
-
-
-
-
-
-
-
-
-
-
 
 
