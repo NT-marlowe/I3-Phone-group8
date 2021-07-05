@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+# old files
+olds/
+
 # Linker output
 *.ilk
 *.map
