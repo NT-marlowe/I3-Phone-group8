@@ -15,14 +15,15 @@
 ├── include 
 │   ├── instrumental.h 
 │   ├── communication.h 
-│   └── compression.h 
+│   └── die.h
+|   └── mypthread.h
 ├── lib 
 └── src 
     ├── main.c 
     ├── instrumental.c
     ├── communication.c
-    ├── mypthread.c
-    └── ~compression.c~
+    ├── die.c
+    └── mypthread.c
 
 ```
 ## 各ファイルに含まれる関数一覧
@@ -62,20 +63,17 @@
 src/Mutitalk.cをコンパイル  
 #### サーバ側
 ```
-./bin/main -l PORT NUMBER_OF_CLIENT | play -t raw -b 16 -c 1 -e s -r 44100 -
+./server.sh -l PORT NUMBER_OF_CLIENTS
 
 ```
-まだ使えません．
 #### クライアント側
 ```
-./bin/main IPADDRESS PORT | play -t raw -b 16 -c 1 -e s -r 44100 -
+./client.sh IPADDRESS PORT
 ```
-まだ使えません．
 
 ### make(現状は楽器のみ、今後通信機能をいれたい)
 ```
 $ make 
-$ ./main.sh
 
 $ make clean (余分なファイルを消したいとき)
 ```
