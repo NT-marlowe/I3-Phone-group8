@@ -8,7 +8,7 @@
 *.elf
 
 # old files
-olds/
+
 
 # Linker output
 *.ilk
