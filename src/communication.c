@@ -74,7 +74,7 @@ void client(char* address, int port, int *s){ // このsは参照渡し
   if (at == 0) die("inet_aton");
   addr.sin_port = htons(port);
   int ret = connect(*s, (struct sockaddr *)&addr, sizeof(addr));
-  if (ret == -1) die("connet");
+  if (ret == -1) die("connect");
   else {
     fprintf(stderr, "connection to %s %d succeeded!\n", address, port);
   }
@@ -83,47 +83,5 @@ void client(char* address, int port, int *s){ // このsは参照渡し
   // ここで何かしらのデータが来るまでせきとめないと先に接続した方のクライアントが録音を開始してしまう
   if (recv(*s, &data, sizeof(int), 0) == -1) die("recv dummy_data");
 }
-
-
-// client()とserver()の使い方
-// mainの中でsとssを宣言しておく(mainの最後にcloseするのを忘れるな！)
-    // 
-    // int s = socket(PF_INET, SOCK_STREAM, 0);
-    // int *ss = NULL;
-    // int number_of_client = 0;
-
-// 引数が3つの時はクライアント．　./bin/main address port の順に渡す．
-    // if (argc == 3) {  // a.out address port
-    //     int port = atoi(argv[2]);
-    //     client(argv[1], port, &s);
-    // }
-// 引数が4つの時はサーバ．      ./bin/main -l port number_of_client の順に渡す．
-    // else if (argc == 4) {   // a.out -l port numOfClient
-    //     int port = atoi(argv[2]);
-    //     number_of_client = atoi(argv[3]);
-    //     ss = (int*)calloc(number_of_client, sizeof(int));
-    //     if (ss == NULL) {
-    //         die("calloc");
-    //     }
-    //     server(port, number_of_client, ss);
-    // }
-    // ここで接続完了
-    // close(s);
-    // for (int i = 0; i < number_of_client; i++) close(ss[i]);
-    
-    
-    // if (ss != NULL) free(ss);
-        
-
-
-
-
-
-
-
-
-
-
-
 
 
