@@ -71,10 +71,11 @@ src/Mutitalk.cをコンパイル
 ./client.sh IPADDRESS PORT
 ```
 
-### make(現状は楽器のみ、今後通信機能をいれたい)
+### make 多人数セッションの実行
 ```
 $ make 
-
+$ ./server.sh -l PORT NUMBER_OF_CLIENTS (サーバ側)
+$ ./client.sh IPADDRESS PORT (クライアント側)
 $ make clean (余分なファイルを消したいとき)
 ```
 - `make`はオブジェクトファイルの作成と実行ファイルのコンパイルを行う．
